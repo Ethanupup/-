@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ethan｜行銷企劃 OS</title>
+  <!-- 引入樣式表 -->
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -147,9 +148,8 @@
     <div class="card">
       <div class="section-title">
         <h2>📊 業績分析中心</h2>
-        <div><button class="btn secondary" onclick="addSalesRow()">＋ 新增月份</button> <button class="btn" onclick="saveSales()">儲存數據</button></div>
       </div>
-      <p class="small-note">可直接輸入每月／每週業績。系統會自動計算客單價，並產生業績比較與品類占比圖。</p>
+      <p class="small-note">業績數字與 Top 熱賣品總覽。</p>
       <div class="sales-kpis" id="salesKpis"></div>
     </div>
 
@@ -161,16 +161,6 @@
       <div class="card">
         <div class="section-title"><h2>🥧 業績結構</h2><span>依目前輸入的資料</span></div>
         <div class="chart-box"><div class="chart-title">營業額占比</div><div id="salesPieChart"></div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title"><h2>🧾 業績資料輸入</h2><span>營業額／訂單數／客單價／總冊數／Top 3</span></div>
-      <div class="table-wrap">
-        <table class="input-table">
-          <thead><tr><th>期間</th><th>營業額</th><th>訂單數</th><th>客單價</th><th>總冊數</th><th>本週 Top 1</th><th>本週 Top 2</th><th>本週 Top 3</th><th></th></tr></thead>
-          <tbody id="salesRows"></tbody>
-        </table>
       </div>
     </div>
 
@@ -208,12 +198,13 @@
   <div class="footer">資料儲存在此瀏覽器；之後若要跨裝置使用，可再接 Google Sheets / Supabase。</div>
 </main>
 
+<!-- === 所有彈出視窗 (Modals) === -->
 <div class="modal-bg" id="taskModal">
   <div class="modal">
     <h3>新增任務</h3>
     <div class="form">
-      <label>任務名稱<input id="fTaskTitle" placeholder="例如：9月會員活動 LINE 預熱文案"></label>
-      <label>專案<input id="fTaskProject" placeholder="例如：9月會員活動"></label>
+      <label>任務名稱<input id="fTaskTitle" placeholder="請輸入任務名稱..."></label>
+      <label>專案<input id="fTaskProject" placeholder="請輸入歸屬專案..."></label>
       <label>截止日期<input id="fTaskDate" type="date"></label>
       <label>狀態<select id="fTaskStatus"><option value="todo">待辦</option><option value="doing">進行中</option><option value="done">完成</option></select></label>
       <label>優先級<select id="fTaskPriority"><option value="high">高</option><option value="medium" selected>中</option><option value="low">低</option></select></label>
@@ -226,7 +217,7 @@
   <div class="modal">
     <h3>新增專案</h3>
     <div class="form">
-      <label>專案名稱<input id="fProjectName" placeholder="例如：9月開學嚴選"></label>
+      <label>專案名稱<input id="fProjectName" placeholder="請輸入專案名稱..."></label>
       <label>截止日期<input id="fProjectDate" type="date"></label>
       <label>進度（0–100）<input id="fProjectProgress" type="number" min="0" max="100" value="0"></label>
     </div>
