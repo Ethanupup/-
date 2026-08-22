@@ -1,5 +1,11 @@
 // ...前面的 UI 操作方法都保留不變...
 
+function openSalesModal() {
+  ['mSalesPeriod', 'mSalesChannel', 'mSalesRevenue', 'mSalesOrders', 'mSalesBooks', 'mSalesTop1', 'mSalesTop2', 'mSalesTop3'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  openModal('salesModal');
+}
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
