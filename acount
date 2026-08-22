@@ -1,8 +1,0 @@
-ethan-os/
-├── index.html          (主頁面：只放 HTML 結構)
-├── css/
-│   └── style.css       (樣式表：放所有的 CSS)
-└── js/
-    ├── data.js         (核心資料與儲存：處理 localStorage)
-    ├── sales.js        (業績模組：處理業績報表與圖表)
-    └── app.js          (主程式：處理畫面渲染與切換)
