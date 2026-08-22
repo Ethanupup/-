@@ -1,0 +1,65 @@
+// 日期工具
+const today = new Date();
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fmt = d => `${d.getMonth() + 1}/${d.getDate()}`;
+function daysUntil(date) { return Math.ceil((new Date(date + 'T23:59:59') - new Date()) / 86400000); }
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
+
+// 載入預設資料
+let tasks = JSON.parse(localStorage.getItem('ethan_os_tasks') || 'null') || [
+  { id: 1, title: '9月儲值會員活動主視覺', project: '9月會員活動', date: '2026-08-20', status: 'doing', priority: 'high' },
+  { id: 2, title: '高雄兒少展 LINE 預熱文案', project: '高雄兒少展', date: '2026-08-25', status: 'todo', priority: 'high' },
+  { id: 3, title: '整理禾流新品社群素材', project: '新品宣傳', date: '2026-08-22', status: 'todo', priority: 'medium' },
+  { id: 4, title: '確認 9 月五折書名單', project: '9月會員活動', date: '2026-08-28', status: 'todo', priority: 'medium' },
+  { id: 5, title: '完成本週社群貼文', project: '社群', date: '2026-08-17', status: 'doing', priority: 'high' }
+];
+
+let projects = JSON.parse(localStorage.getItem('ethan_os_projects') || 'null') || [
+  { id: 1, name: '9月會員活動', date: '2026-08-31', progress: 55 },
+  { id: 2, name: '高雄兒少展', date: '2026-09-23', progress: 25 },
+  { id: 3, name: '台北婦幼展', date: '2026-10-01', progress: 10 },
+  { id: 4, name: '禾流新品宣傳', date: '2026-09-15', progress: 40 }
+];
+
+let kpi = JSON.parse(localStorage.getItem('ethan_os_kpi') || 'null') || { target: '', revenue: '', orders: '', aov: '' };
+
+const aiPrompts = [
+  ['📝 社群文案', '家長痛點／情境貼文', '你是資深親子內容行銷企劃。請針對以下商品，以家長真實生活情境切入，寫出有畫面、好讀、不過度銷售的社群貼文。商品：'],
+  ['📣 LINE 文案', '500字內活動推播', '你是會員行銷企劃。請將以下活動資訊整理成適合 LINE 官方帳號的推播文案，先抓家長痛點，再交代利益與行動誘因，控制在500字內。活動：'],
+  ['🎯 活動企劃', '提升客單價／轉換', '你是親子電商活動企劃。請針對以下商品或活動，提出3個低複雜度、高轉換的玩法，並說明家長為什麼會想買。'],
+  ['📚 書單包裝', '從需求不是書名出發', '你是童書行銷企劃。請把以下書籍重新包裝成「家長需求導向」的書單主題，不要只是列書名，請提出主標、痛點與購買情境。'],
+  ['🎪 展場活動', '人多也能快速玩', '你是大型婦幼／兒少展活動企劃。請設計不需要長時間理解、不容易排隊卡住、能快速完成並帶動購買的現場玩法。商品／主題：'],
+  ['📊 行銷分析', '找出問題與下一步', '你是行銷數據分析師。請分析以下數據，找出最值得注意的3個問題，並提出下一步具體行動。數據：']
+];
+
+// 儲存方法
+function saveAll() {
+  localStorage.setItem('ethan_os_tasks', JSON.stringify(tasks));
+  localStorage.setItem('ethan_os_projects', JSON.stringify(projects));
+  localStorage.setItem('ethan_os_kpi', JSON.stringify(kpi));
+}
+
+let salesData = JSON.parse(localStorage.getItem('ethan_sales_data') || 'null') || [
+  { period: '2026/08 W1', revenue: 0, orders: 0, aov: 0, books: 0, top1: '', top2: '', top3: '' },
+  { period: '2026/08 W2', revenue: 0, orders: 0, aov: 0, books: 0, top1: '', top2: '', top3: '' },
+  { period: '2026/08 W3', revenue: 0, orders: 0, aov: 0, books: 0, top1: '', top2: '', top3: '' }
+];
+
+function ensureSalesDataShape() {
+  if (typeof salesData === "undefined") return;
+  salesData = salesData.map((r, i) => ({
+    id: r.id || (Date.now() + i),
+    period: r.period || `第${i + 1}期`,
+    channel: r.channel || "未分類",
+    revenue: Number(r.revenue) || 0,
+    orders: Number(r.orders) || 0,
+    aov: Number(r.orders) ? Math.round((Number(r.revenue) || 0) / Number(r.orders)) : 0,
+    books: Number(r.books) || 0,
+    top1: r.top1 || "",
+    top2: r.top2 || "",
+    top3: r.top3 || ""
+  }));
+}
+function saveSalesStorage() { localStorage.setItem('ethan_sales_data', JSON.stringify(salesData)); }
+ensureSalesDataShape();
