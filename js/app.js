@@ -125,7 +125,13 @@ function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
   document.getElementById(id).classList.add('active'); btn.classList.add('active');
-  if (id === 'sales') { renderSales(); renderEnhancedSalesEditor(); updateSalesExtensionSummary(); }
+  if (id === 'sales') {
+    setTimeout(() => {
+        renderSales();
+        renderEnhancedSalesEditor();
+        updateSalesExtensionSummary();
+    }, 50);
+}
   if (id === 'calendarPage') renderCalendar();
   if (id === 'aiPage') renderAI();
   if (id === 'kpiPage') renderKpi();
