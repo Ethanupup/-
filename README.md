@@ -52,7 +52,7 @@ button{cursor:pointer}
 @media(max-width:700px){.container{padding:12px}.metrics,.project-grid,.ai-grid{grid-template-columns:1fr}.topbar-inner{align-items:flex-start;flex-direction:column}.tools{justify-content:flex-start}.task{grid-template-columns:7px 1fr}.task .btn{grid-column:2}.calendar{gap:3px}.cal-day{min-height:55px}}
 
 /* --- 分頁版工作區 --- */
-.tabs{display:flex;gap:8px;overflow:auto;padding:0 0 14px;margin-bottom:4px}
+.tabs{position:sticky;top:0;z-index:20;background:var(--bg);padding-top:8px;display:flex;gap:8px;overflow:auto;padding:0 0 14px;margin-bottom:4px}
 .tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:10px 16px;border-radius:10px;font-weight:700;white-space:nowrap}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 .page{display:none}.page.active{display:block}
@@ -74,6 +74,31 @@ button{cursor:pointer}
 .rank-num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--blue2);color:var(--blue);font-weight:800}
 @media(max-width:1100px){.sales-kpis{grid-template-columns:repeat(3,1fr)}.subgrid{grid-template-columns:1fr}}
 @media(max-width:700px){.sales-kpis{grid-template-columns:repeat(2,1fr)}}
+
+/* ===== 業績擴充模組 ===== */
+.sales-editor-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.sales-form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sales-form-grid label{font-size:12px;color:var(--muted)}
+.sales-form-grid input,.sales-form-grid select{width:100%;margin-top:5px;border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff}
+.sales-form-grid .wide{grid-column:span 2}
+.sales-action-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:12px}
+.sales-editor-table{width:100%;border-collapse:collapse;font-size:12px}
+.sales-editor-table th,.sales-editor-table td{padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.sales-editor-table th{color:var(--muted);font-weight:700;text-align:left}
+.sales-editor-table td input{width:100%;min-width:85px;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff}
+.sales-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sales-mini{padding:12px;border:1px solid var(--line);border-radius:10px;background:#fbfcfe}
+.sales-mini .label{font-size:11px;color:var(--muted)}.sales-mini .value{font-size:19px;font-weight:800;margin-top:4px}
+.sales-filter-row{display:flex;gap:8px;flex-wrap:wrap}
+.sales-filter-row select,.sales-filter-row input{border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff}
+.sales-filter-row input{flex:1;min-width:180px}
+.sales-badge{display:inline-block;padding:4px 7px;border-radius:7px;font-size:11px;font-weight:700;background:var(--blue2);color:var(--blue)}
+.sales-badge.green{background:var(--green2);color:var(--green)}
+.sales-badge.orange{background:var(--orange2);color:var(--orange)}
+.sales-help{font-size:12px;color:var(--muted);line-height:1.7}
+@media(max-width:1050px){.sales-editor-grid{grid-template-columns:1fr}.sales-form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.sales-form-grid{grid-template-columns:1fr}.sales-form-grid .wide{grid-column:span 1}.sales-mini-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -98,6 +123,7 @@ button{cursor:pointer}
   <div class="tabs">
     <button class="tab active" onclick="showPage('dashboard',this)">🏠 工作總覽</button>
     <button class="tab" onclick="showPage('projects',this)">🎯 專案管理</button>
+    <button class="tab" onclick="showPage('kpiPage',this)">🎯 KPI 戰情</button>
     <button class="tab" onclick="showPage('sales',this)">📊 業績分析</button>
     <button class="tab" onclick="showPage('calendarPage',this)">📅 行銷行事曆</button>
     <button class="tab" onclick="showPage('aiPage',this)">🧠 AI 工作台</button>
@@ -105,101 +131,34 @@ button{cursor:pointer}
   </div>
 
   <div id="dashboard" class="page active">
-  <div class="grid">
-
-    <section>
-      <div class="card">
-        <div class="section-title">
-          <h2>🔥 今日戰情</h2><span id="todayText"></span>
+    <div class="grid">
+      <section>
+        <div class="card">
+          <div class="section-title"><h2>🔥 今日戰情</h2><span id="todayText"></span></div>
+          <div class="metrics">
+            <div class="metric"><div class="label">今日待辦</div><div class="value" id="todayCount">0</div><div class="hint">尚未完成</div></div>
+            <div class="metric"><div class="label">本週到期</div><div class="value" id="weekDue">0</div><div class="hint bad">請優先檢查</div></div>
+            <div class="metric"><div class="label">進行中專案</div><div class="value" id="projectCount">0</div><div class="hint">目前戰場</div></div>
+            <div class="metric"><div class="label">本月目標</div><div class="value" id="targetValue">—</div><div class="hint" id="targetHint">可自行設定</div></div>
+          </div>
         </div>
-        <div class="metrics">
-          <div class="metric"><div class="label">今日待辦</div><div class="value" id="todayCount">0</div><div class="hint">尚未完成</div></div>
-          <div class="metric"><div class="label">本週到期</div><div class="value" id="weekDue">0</div><div class="hint bad">請優先檢查</div></div>
-          <div class="metric"><div class="label">進行中專案</div><div class="value" id="projectCount">0</div><div class="hint">目前戰場</div></div>
-          <div class="metric"><div class="label">本月目標</div><div class="value" id="targetValue">—</div><div class="hint" id="targetHint">可自行設定</div></div>
+        <div class="card">
+          <div class="section-title"><h2>⚠️ 優先處理</h2><button class="btn" onclick="openTaskModal()">＋ 新增任務</button></div>
+          <div id="priorityList" class="focus-list"></div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h2>⚠️ 優先處理</h2>
-          <button class="btn" onclick="openTaskModal()">＋ 新增任務</button>
+      </section>
+      <aside>
+        <div class="card"><div class="section-title"><h2>🧭 快速導航</h2><span>把工作分開，首頁只看戰情</span></div>
+          <div class="ai-grid">
+            <button class="ai-btn" onclick="showPage('projects',document.querySelectorAll('.tab')[1])"><strong>🎯 專案管理</strong><small>專案、任務、截止日</small></button>
+            <button class="ai-btn" onclick="showPage('kpiPage',document.querySelectorAll('.tab')[2])"><strong>🎯 KPI 戰情</strong><small>目標與月度成效</small></button>
+            <button class="ai-btn" onclick="showPage('sales',document.querySelectorAll('.tab')[3])"><strong>📊 業績分析</strong><small>營業額、訂單、客單價</small></button>
+            <button class="ai-btn" onclick="showPage('calendarPage',document.querySelectorAll('.tab')[4])"><strong>📅 行銷行事曆</strong><small>所有活動與截止日</small></button>
+          </div>
         </div>
-        <div id="priorityList" class="focus-list"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h2>🎯 專案戰場</h2>
-          <button class="btn" onclick="openProjectModal()">＋ 新增專案</button>
-        </div>
-        <div id="projectGrid" class="project-grid"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h2>📋 任務中心</h2>
-          <span>可用搜尋、狀態、優先級快速篩選</span>
-        </div>
-        <div class="task-toolbar">
-          <input id="taskSearch" placeholder="搜尋任務..." oninput="renderTasks()">
-          <select id="taskStatus" onchange="renderTasks()">
-            <option value="all">全部狀態</option><option value="todo">待辦</option><option value="doing">進行中</option><option value="done">完成</option>
-          </select>
-          <select id="taskPriority" onchange="renderTasks()">
-            <option value="all">全部優先級</option><option value="high">高</option><option value="medium">中</option><option value="low">低</option>
-          </select>
-        </div>
-        <div id="taskList" class="task-list"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h2>📊 KPI 戰情</h2><button class="btn secondary" onclick="openKpiModal()">編輯 KPI</button>
-        </div>
-        <div class="metrics" id="kpiMetrics"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">
-          <h2>📅 行銷行事曆</h2><span>點擊日期可新增節點</span>
-        </div>
-        <div id="calendar" class="calendar"></div>
-      </div>
-    </section>
-
-    <aside>
-      <div class="card">
-        <div class="section-title"><h2>🧠 AI 工作台</h2><span>一鍵複製 Prompt</span></div>
-        <div class="ai-grid" id="aiGrid"></div>
-      </div>
-
-      <div class="card">
-        <div class="section-title"><h2>📝 快速筆記</h2><button class="btn secondary" onclick="clearNotes()">清空</button></div>
-        <textarea id="notes" class="quick-notes" placeholder="突然想到的活動、文案、書單、展場玩法，都先丟這裡。"></textarea>
-      </div>
-
-      <div class="card">
-        <div class="section-title"><h2>🔗 工作入口</h2></div>
-        <div class="ai-grid">
-          <a class="ai-btn" href="https://docs.google.com/spreadsheets/" target="_blank"><strong>📊 Google Sheets</strong><small>數據／排程／報表</small></a>
-          <a class="ai-btn" href="https://www.notion.so/" target="_blank"><strong>🗂 Notion</strong><small>企劃／資料庫</small></a>
-          <a class="ai-btn" href="https://drive.google.com/" target="_blank"><strong>☁️ Google Drive</strong><small>素材／檔案</small></a>
-          <a class="ai-btn" href="https://business.facebook.com/" target="_blank"><strong>📣 Meta Business</strong><small>廣告／粉專</small></a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title"><h2>💡 使用原則</h2></div>
-        <div style="line-height:1.8;font-size:13px;color:var(--muted)">
-          <p>① 所有任務都要有「截止日」。</p>
-          <p>② 一件事如果超過 3 天，拆成更小的任務。</p>
-          <p>③ 每天只挑 3 件「今天真的要完成」的事。</p>
-          <p>④ KPI 不只記數字，要看「距離目標還差多少」。</p>
-          <p>⑤ 卡關超過 24 小時，就標記為高優先級。</p>
-        </div>
-      </div>
-    </aside>
+        <div class="card"><div class="section-title"><h2>💡 今日原則</h2></div><div style="line-height:1.8;font-size:13px;color:var(--muted)"><p>① 首頁只處理「今天要做什麼」。</p><p>② 詳細任務到「專案管理」。</p><p>③ 數字到「KPI／業績分析」。</p><p>④ 活動日期全部到「行銷行事曆」。</p></div></div>
+      </aside>
+    </div>
   </div>
 
   <div id="projects" class="page">
@@ -218,8 +177,93 @@ button{cursor:pointer}
     </div>
   </div>
 
-  <div id="sales" class="page">
+  <div id="kpiPage" class="page">
     <div class="card">
+      <div class="section-title"><h2>🎯 KPI 戰情</h2><button class="btn secondary" onclick="openKpiModal()">編輯 KPI</button></div>
+      <div class="metrics" id="kpiMetrics"></div>
+    </div>
+    <div class="card"><div class="section-title"><h2>📌 KPI 使用方式</h2><span>這裡只放月度目標與達成狀況</span></div><p class="small-note">營收、訂單數、客單價與目標差距集中在這裡；更細的週期業績、Top 商品與圖表請到「業績分析」。</p></div>
+  </div>
+
+  <div id="sales" class="page">
+    
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h2>✏️ 業績編輯區</h2>
+          <div class="sales-help">直接輸入資料，按「加入資料」後會同步到原本的業績報表。客單價會依「營業額 ÷ 訂單數」自動計算。</div>
+        </div>
+        <span class="sales-badge">新增功能，不影響原本報表</span>
+      </div>
+
+      <div class="sales-editor-grid">
+        <div>
+          <div class="sales-form-grid">
+            <label>期間<input id="salesInputPeriod" placeholder="例如：2026/08 W4"></label>
+            <label>通路<input id="salesInputChannel" placeholder="例如：官網／高雄展"></label>
+            <label>營業額<input id="salesInputRevenue" type="number" min="0" placeholder="0"></label>
+            <label>訂單數<input id="salesInputOrders" type="number" min="0" placeholder="0"></label>
+            <label>總冊數<input id="salesInputBooks" type="number" min="0" placeholder="0"></label>
+            <label>Top 1<input id="salesInputTop1" placeholder="商品名稱"></label>
+            <label>Top 2<input id="salesInputTop2" placeholder="商品名稱"></label>
+            <label>Top 3<input id="salesInputTop3" placeholder="商品名稱"></label>
+          </div>
+          <div class="sales-action-row">
+            <button class="btn secondary" onclick="clearSalesInput()">清空</button>
+            <button class="btn" onclick="addSalesFromForm()">＋ 加入資料</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="sales-mini-grid">
+            <div class="sales-mini"><div class="label">已輸入期間</div><div class="value" id="salesInputCount">0</div></div>
+            <div class="sales-mini"><div class="label">資料營業額</div><div class="value" id="salesInputRevenueSum">$0</div></div>
+            <div class="sales-mini"><div class="label">平均客單</div><div class="value" id="salesInputAovAvg">$0</div></div>
+          </div>
+          <div class="sales-help" style="margin-top:12px">
+            期間可以填週、月、展期或活動名稱。通路也能自由命名；之後可用篩選器只看某個通路。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h2>🧾 業績資料快速編輯</h2>
+          <div class="sales-help">直接改表格，圖表與 KPI 會同步更新。</div>
+        </div>
+        <div class="sales-action-row" style="margin:0">
+          <button class="btn secondary" onclick="addSalesRowEnhanced()">＋ 新增一列</button>
+          <button class="btn secondary" onclick="exportSalesCSVEnhanced()">⬇ 匯出 CSV</button>
+          <button class="btn" onclick="saveSalesEnhanced()">儲存資料</button>
+        </div>
+      </div>
+
+      <div class="sales-filter-row" style="margin-bottom:12px">
+        <input id="salesQuickSearch" placeholder="搜尋期間／通路／Top 商品..." oninput="renderEnhancedSalesEditor()">
+        <select id="salesQuickChannel" onchange="renderEnhancedSalesEditor()"><option value="all">全部通路</option></select>
+        <select id="salesQuickSort" onchange="renderEnhancedSalesEditor()">
+          <option value="dateAsc">期間：舊 → 新</option>
+          <option value="dateDesc">期間：新 → 舊</option>
+          <option value="revenueDesc">營業額：高 → 低</option>
+          <option value="revenueAsc">營業額：低 → 高</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="sales-editor-table">
+          <thead>
+            <tr>
+              <th>期間</th><th>通路</th><th>營業額</th><th>訂單數</th><th>客單價</th><th>總冊數</th><th>Top 1</th><th>Top 2</th><th>Top 3</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="enhancedSalesEditorRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+<div class="card">
       <div class="section-title">
         <h2>📊 業績分析中心</h2>
         <div><button class="btn secondary" onclick="addSalesRow()">＋ 新增月份</button> <button class="btn" onclick="saveSales()">儲存數據</button></div>
@@ -257,16 +301,20 @@ button{cursor:pointer}
 
   <div id="calendarPage" class="page">
     <div class="card">
-      <div class="section-title"><h2>📅 行銷行事曆</h2><span>點擊日期可新增任務</span></div>
-      <div id="calendarPageGrid" class="calendar"></div>
+      <div class="section-title"><h2>📅 行銷行事曆</h2><button class="btn" onclick="openTaskModal()">＋ 新增行程</button></div>
+      <p class="small-note">行銷活動、展覽、LINE、上架、素材截止日全部集中在這裡。點擊日期即可快速新增任務。</p>
+      <div id="calendar" class="calendar"></div>
     </div>
   </div>
 
   <div id="aiPage" class="page">
-    <div class="card">
-      <div class="section-title"><h2>🧠 AI 工作台</h2><span>點一下即可複製 Prompt</span></div>
-      <div id="aiGridPage" class="ai-grid"></div>
-    </div>
+    <div class="card"><div class="section-title"><h2>🧠 AI 工作台</h2><span>一鍵複製常用 Prompt</span></div><div class="ai-grid" id="aiGrid"></div></div>
+    <div class="card"><div class="section-title"><h2>🔗 工作入口</h2></div><div class="ai-grid">
+      <a class="ai-btn" href="https://docs.google.com/spreadsheets/" target="_blank"><strong>📊 Google Sheets</strong><small>數據／排程／報表</small></a>
+      <a class="ai-btn" href="https://www.notion.so/" target="_blank"><strong>🗂 Notion</strong><small>企劃／資料庫</small></a>
+      <a class="ai-btn" href="https://drive.google.com/" target="_blank"><strong>☁️ Google Drive</strong><small>素材／檔案</small></a>
+      <a class="ai-btn" href="https://business.facebook.com/" target="_blank"><strong>📣 Meta Business</strong><small>廣告／粉專</small></a>
+    </div></div>
   </div>
 
   <div id="notesPage" class="page">
@@ -319,6 +367,136 @@ button{cursor:pointer}
 </div>
 
 <script>
+
+/* ===== 業績擴充功能：保留原 salesData，增加可編輯控制台 ===== */
+function ensureSalesDataShape(){
+  if(typeof salesData==="undefined") return;
+  salesData = salesData.map((r,i)=>({
+    id:r.id || (Date.now()+i),
+    period:r.period || `第${i+1}期`,
+    channel:r.channel || "未分類",
+    revenue:Number(r.revenue)||0,
+    orders:Number(r.orders)||0,
+    aov:Number(r.orders)?Math.round((Number(r.revenue)||0)/Number(r.orders)):0,
+    books:Number(r.books)||0,
+    top1:r.top1||"",
+    top2:r.top2||"",
+    top3:r.top3||""
+  }));
+}
+function saveSalesStorage(){ localStorage.setItem('ethan_sales_data',JSON.stringify(salesData)); }
+function updateSalesExtensionSummary(){
+  if(typeof salesData==="undefined") return;
+  const rev=salesData.reduce((s,r)=>s+Number(r.revenue||0),0);
+  const orders=salesData.reduce((s,r)=>s+Number(r.orders||0),0);
+  const c=document.getElementById('salesInputCount');
+  const r=document.getElementById('salesInputRevenueSum');
+  const a=document.getElementById('salesInputAovAvg');
+  if(c)c.textContent=salesData.length;
+  if(r)r.textContent='$'+rev.toLocaleString();
+  if(a)a.textContent='$'+(orders?Math.round(rev/orders):0).toLocaleString();
+}
+function clearSalesInput(){
+  ['salesInputPeriod','salesInputChannel','salesInputRevenue','salesInputOrders','salesInputBooks','salesInputTop1','salesInputTop2','salesInputTop3']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+}
+function addSalesFromForm(){
+  if(typeof salesData==="undefined") return;
+  const period=(document.getElementById('salesInputPeriod')?.value||'').trim();
+  if(!period){alert('請先輸入期間');return;}
+  const revenue=Number(document.getElementById('salesInputRevenue')?.value)||0;
+  const orders=Number(document.getElementById('salesInputOrders')?.value)||0;
+  salesData.push({
+    id:Date.now(),
+    period,
+    channel:(document.getElementById('salesInputChannel')?.value||'未分類').trim()||'未分類',
+    revenue,orders,aov:orders?Math.round(revenue/orders):0,
+    books:Number(document.getElementById('salesInputBooks')?.value)||0,
+    top1:(document.getElementById('salesInputTop1')?.value||'').trim(),
+    top2:(document.getElementById('salesInputTop2')?.value||'').trim(),
+    top3:(document.getElementById('salesInputTop3')?.value||'').trim()
+  });
+  saveSalesStorage();
+  clearSalesInput();
+  renderEnhancedSalesEditor();
+  updateSalesExtensionSummary();
+  if(typeof renderSales==="function")renderSales();
+}
+function addSalesRowEnhanced(){
+  if(typeof salesData==="undefined")return;
+  salesData.push({id:Date.now(),period:'新期間',channel:'未分類',revenue:0,orders:0,aov:0,books:0,top1:'',top2:'',top3:''});
+  saveSalesStorage();renderEnhancedSalesEditor();updateSalesExtensionSummary();
+  if(typeof renderSales==="function")renderSales();
+}
+function deleteSalesEnhanced(id){
+  if(!confirm('確定刪除這筆業績資料？'))return;
+  salesData=salesData.filter(r=>r.id!==id);
+  saveSalesStorage();renderEnhancedSalesEditor();updateSalesExtensionSummary();
+  if(typeof renderSales==="function")renderSales();
+}
+function updateSalesEnhanced(id,key,value){
+  const r=salesData.find(x=>x.id===id); if(!r)return;
+  if(['period','channel','top1','top2','top3'].includes(key)) r[key]=value;
+  else r[key]=Number(value)||0;
+  if(key==='revenue'||key==='orders') r.aov=r.orders?Math.round(r.revenue/r.orders):0;
+  saveSalesStorage();renderEnhancedSalesEditor();updateSalesExtensionSummary();
+  if(typeof renderSales==="function")renderSales();
+}
+function refreshEnhancedChannel(){
+  const s=document.getElementById('salesQuickChannel'); if(!s)return;
+  const current=s.value||'all';
+  const channels=[...new Set(salesData.map(r=>r.channel||'未分類'))];
+  s.innerHTML='<option value="all">全部通路</option>'+channels.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if(channels.includes(current))s.value=current;
+}
+function renderEnhancedSalesEditor(){
+  if(typeof salesData==="undefined")return;
+  ensureSalesDataShape();
+  refreshEnhancedChannel();
+  const q=(document.getElementById('salesQuickSearch')?.value||'').toLowerCase().trim();
+  const channel=document.getElementById('salesQuickChannel')?.value||'all';
+  const sort=document.getElementById('salesQuickSort')?.value||'dateAsc';
+  let rows=salesData.filter(r=>{
+    const hay=`${r.period} ${r.channel} ${r.top1} ${r.top2} ${r.top3}`.toLowerCase();
+    return hay.includes(q)&&(channel==='all'||(r.channel||'未分類')===channel);
+  });
+  rows.sort((a,b)=>{
+    if(sort==='revenueDesc')return Number(b.revenue)-Number(a.revenue);
+    if(sort==='revenueAsc')return Number(a.revenue)-Number(b.revenue);
+    if(sort==='dateDesc')return String(b.period).localeCompare(String(a.period));
+    return String(a.period).localeCompare(String(b.period));
+  });
+  const tbody=document.getElementById('enhancedSalesEditorRows'); if(!tbody)return;
+  tbody.innerHTML=rows.length?rows.map(r=>`
+    <tr>
+      <td><input value="${escapeHtml(r.period)}" onchange="updateSalesEnhanced(${r.id},'period',this.value)"></td>
+      <td><input value="${escapeHtml(r.channel)}" onchange="updateSalesEnhanced(${r.id},'channel',this.value)"></td>
+      <td><input type="number" min="0" value="${r.revenue}" onchange="updateSalesEnhanced(${r.id},'revenue',this.value)"></td>
+      <td><input type="number" min="0" value="${r.orders}" onchange="updateSalesEnhanced(${r.id},'orders',this.value)"></td>
+      <td><input value="${r.aov}" readonly></td>
+      <td><input type="number" min="0" value="${r.books}" onchange="updateSalesEnhanced(${r.id},'books',this.value)"></td>
+      <td><input value="${escapeHtml(r.top1)}" onchange="updateSalesEnhanced(${r.id},'top1',this.value)"></td>
+      <td><input value="${escapeHtml(r.top2)}" onchange="updateSalesEnhanced(${r.id},'top2',this.value)"></td>
+      <td><input value="${escapeHtml(r.top3)}" onchange="updateSalesEnhanced(${r.id},'top3',this.value)"></td>
+      <td><button class="btn danger" onclick="deleteSalesEnhanced(${r.id})">刪除</button></td>
+    </tr>`).join(''):'<tr><td colspan="10" class="empty">沒有符合條件的資料。</td></tr>';
+  updateSalesExtensionSummary();
+}
+function saveSalesEnhanced(){
+  ensureSalesDataShape();saveSalesStorage();
+  if(typeof renderSales==="function")renderSales();
+  alert('業績資料已儲存。');
+}
+function exportSalesCSVEnhanced(){
+  ensureSalesDataShape();
+  const rows=[['期間','通路','營業額','訂單數','客單價','總冊數','Top 1','Top 2','Top 3'],
+    ...salesData.map(r=>[r.period,r.channel,r.revenue,r.orders,r.aov,r.books,r.top1,r.top2,r.top3])];
+  const csv=rows.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='Ethan_業績資料.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+}
+
 const today=new Date();
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -459,11 +637,16 @@ let salesData=JSON.parse(localStorage.getItem('ethan_sales_data')||'null')||[
  {period:'2026/08 W2',revenue:0,orders:0,aov:0,books:0,top1:'',top2:'',top3:''},
  {period:'2026/08 W3',revenue:0,orders:0,aov:0,books:0,top1:'',top2:'',top3:''}
 ];
+ensureSalesDataShape();
+
 function showPage(id,btn){
  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
  document.getElementById(id).classList.add('active');btn.classList.add('active');
- if(id==='sales')renderSales(); if(id==='calendarPage')renderCalendarPage(); if(id==='aiPage')renderAIPage();
+ if(id==='sales'){renderSales();renderEnhancedSalesEditor();updateSalesExtensionSummary();}
+ if(id==='calendarPage')renderCalendar();
+ if(id==='aiPage')renderAI();
+ if(id==='kpiPage')renderKpi();
  if(id==='projects'){renderProjectsPage();renderTasksPage()}
 }
 function renderProjectsPage(){
@@ -542,13 +725,10 @@ function renderCalendarPage(){
  for(let i=0;i<first;i++)el.innerHTML+='<div></div>';
  for(let d=1;d<=days;d++){const date=`${y}-${pad(m+1)}-${pad(d)}`,ts=tasks.filter(t=>t.date===date&&t.status!=='done');el.innerHTML+=`<div class="cal-day ${d===today.getDate()?'today':''}" onclick="addDateTask('${date}')"><strong>${d}</strong>${ts.slice(0,3).map(t=>`<em>• ${escapeHtml(t.title.slice(0,12))}</em>`).join('')}</div>`}
 }
-function renderAIPage(){aiGridPage.innerHTML=aiPrompts.map((x,i)=>`<button class="ai-btn" onclick="copyPrompt(${i})"><strong>${x[0]}</strong><small>${x[1]}</small></button>`).join('')}
-
 renderAll();
 
-function renderAll(){renderTop();renderPriority();renderProjects();renderTasks();renderKpi();renderAI();renderCalendar()}
+function renderAll(){renderTop();renderPriority();renderProjects();renderTasks();renderKpi();renderAI();renderCalendar();renderEnhancedSalesEditor();updateSalesExtensionSummary()}
 renderAll();
 </script>
 </body>
 </html>
-
