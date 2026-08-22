@@ -101,18 +101,11 @@
         <span class="sales-badge">新增功能，不影響原本報表</span>
       </div>
 
-      <div class="sales-editor-grid">
-        <div>
-          <div class="sales-form-grid">
-            <label>期間<input id="salesInputPeriod" placeholder="例如：2026/08 W4"></label>
-            <label>通路<input id="salesInputChannel" placeholder="例如：官網／高雄展"></label>
-            <label>營業額<input id="salesInputRevenue" type="number" min="0" placeholder="0"></label>
-            <label>訂單數<input id="salesInputOrders" type="number" min="0" placeholder="0"></label>
-            <label>總冊數<input id="salesInputBooks" type="number" min="0" placeholder="0"></label>
-            <label>Top 1<input id="salesInputTop1" placeholder="商品名稱"></label>
-            <label>Top 2<input id="salesInputTop2" placeholder="商品名稱"></label>
-            <label>Top 3<input id="salesInputTop3" placeholder="商品名稱"></label>
-          </div>
+      <div class="sales-mini-grid" style="margin-bottom: 20px;">
+        <button class="btn" style="padding: 15px; font-size: 16px;" onclick="openSalesModal()">＋ 新增業績資料</button>
+        <div class="sales-mini"><div class="label">資料營業額</div><div class="value" id="salesInputRevenueSum">$0</div></div>
+        <div class="sales-mini"><div class="label">平均客單</div><div class="value" id="salesInputAovAvg">$0</div></div>
+      </div>
           <div class="sales-action-row">
             <button class="btn secondary" onclick="clearSalesInput()">清空</button>
             <button class="btn" onclick="addSalesFromForm()">＋ 加入資料</button>
@@ -258,16 +251,20 @@
   </div>
 </div>
 
-<div class="modal-bg" id="kpiModal">
+<div class="modal-bg" id="salesModal">
   <div class="modal">
-    <h3>編輯 KPI</h3>
+    <h3>新增業績資料</h3>
     <div class="form">
-      <label>本月目標<input id="fTarget" placeholder="例如：200000"></label>
-      <label>營收<input id="fRevenue" placeholder="例如：128000"></label>
-      <label>訂單數<input id="fOrders" placeholder="例如：96"></label>
-      <label>客單價<input id="fAov" placeholder="例如：1333"></label>
+      <label>期間<input id="mSalesPeriod" placeholder="例如：2026/08 W4"></label>
+      <label>通路<input id="mSalesChannel" placeholder="例如：官網／高雄展"></label>
+      <label>營業額<input id="mSalesRevenue" type="number" min="0" placeholder="0"></label>
+      <label>訂單數<input id="mSalesOrders" type="number" min="0" placeholder="0"></label>
+      <label>總冊數<input id="mSalesBooks" type="number" min="0" placeholder="0"></label>
+      <label>Top 1<input id="mSalesTop1" placeholder="商品名稱"></label>
+      <label>Top 2<input id="mSalesTop2" placeholder="商品名稱"></label>
+      <label>Top 3<input id="mSalesTop3" placeholder="商品名稱"></label>
     </div>
-    <div class="modal-actions"><button class="btn secondary" onclick="closeModal('kpiModal')">取消</button><button class="btn" onclick="saveKpi()">儲存</button></div>
+    <div class="modal-actions"><button class="btn secondary" onclick="closeModal('salesModal')">取消</button><button class="btn" onclick="saveSalesData()">儲存</button></div>
   </div>
 </div>
 
