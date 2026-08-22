@@ -10,21 +10,29 @@ function clearSalesInput() {
   ['salesInputPeriod', 'salesInputChannel', 'salesInputRevenue', 'salesInputOrders', 'salesInputBooks', 'salesInputTop1', 'salesInputTop2', 'salesInputTop3']
     .forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
 }
-function addSalesFromForm() {
-  const period = (document.getElementById('salesInputPeriod').value || '').trim();
+function saveSalesData() {
+  const period = (document.getElementById('mSalesPeriod').value || '').trim();
   if (!period) { alert('請先輸入期間'); return; }
-  const revenue = Number(document.getElementById('salesInputRevenue').value) || 0;
-  const orders = Number(document.getElementById('salesInputOrders').value) || 0;
+  const revenue = Number(document.getElementById('mSalesRevenue').value) || 0;
+  const orders = Number(document.getElementById('mSalesOrders').value) || 0;
+  
   salesData.push({
     id: Date.now(),
     period,
-    channel: (document.getElementById('salesInputChannel').value || '未分類').trim() || '未分類',
+    channel: (document.getElementById('mSalesChannel').value || '未分類').trim() || '未分類',
     revenue, orders, aov: orders ? Math.round(revenue / orders) : 0,
-    books: Number(document.getElementById('salesInputBooks').value) || 0,
-    top1: (document.getElementById('salesInputTop1').value || '').trim(),
-    top2: (document.getElementById('salesInputTop2').value || '').trim(),
-    top3: (document.getElementById('salesInputTop3').value || '').trim()
+    books: Number(document.getElementById('mSalesBooks').value) || 0,
+    top1: (document.getElementById('mSalesTop1').value || '').trim(),
+    top2: (document.getElementById('mSalesTop2').value || '').trim(),
+    top3: (document.getElementById('mSalesTop3').value || '').trim()
   });
+  
+  saveSalesStorage();
+  closeModal('salesModal');
+  renderEnhancedSalesEditor();
+  updateSalesExtensionSummary();
+  renderSales();
+}
   saveSalesStorage();
   clearSalesInput();
   renderEnhancedSalesEditor();
